@@ -1,0 +1,24 @@
+export FZF_DEFAULT_OPTS='
+  --style minimal
+  --height 100%
+  --layout default
+  --color=label:#00ADDC,prompt:#FF5DC4,pointer:#FF5DC4,info:#626262,spinner:#626262,hl:#35e335
+  --border="rounded"
+'
+
+# Custom function for fzf with dynamic label
+update_fzf_label() {
+
+fzf --preview "
+  if file --mime-type {} | grep -qF image/; then
+    chafa -f iterm -s ${FZF_PREVIEW_COLUMNS}x${FZF_PREVIEW_LINES} {}
+  else
+    bat {}
+  fi
+" \
+  --border-label=$(basename "$PWD") \
+  --border-label-pos="0" \
+  --preview-window="border-rounded" \
+}
+
+bindkey -s '^T' 'update_fzf_label\n'
