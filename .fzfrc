@@ -2,23 +2,29 @@ export FZF_DEFAULT_OPTS='
   --style minimal
   --height 100%
   --layout default
-  --color=label:#00ADDC,prompt:#FF5DC4,pointer:#FF5DC4,info:#626262,spinner:#626262,hl:#35e335
+  --color=header:#00ADDC,prompt:#FF5DC4,pointer:#FF5DC4,info:#626262,spinner:#626262,hl:#35e335
   --border="rounded"
+  --preview-window="border-rounded"
+  --header-border="rounded"
 '
 
-# Custom function for fzf with dynamic label
-update_fzf_label() {
-
-fzf --preview "
-  if file --mime-type {} | grep -qF image/; then
-    chafa -f iterm -s ${FZF_PREVIEW_COLUMNS}x${FZF_PREVIEW_LINES} {}
-  else
-    bat {}
-  fi
-" \
-  --border-label=$(basename "$PWD") \
-  --border-label-pos="0" \
-  --preview-window="border-rounded" \
+CTRL_T() {
+    fzf --preview "
+    if file --mime-type {} | grep -qF image/; then
+        chafa -f iterm -s $((LINES / 2))x${COLUMNS} {}
+    else
+        bat {}
+    fi
+    " \
+    --header=$(basename "$PWD") \
 }
 
-bindkey -s '^T' 'update_fzf_label\n'
+ALT_C() {
+    fzf --walker=dir,follow,hidden \
+    --scheme=path \
+    --header=$(basename "$PWD") \
+    --preview "tree -C {}" \
+}
+
+bindkey -s '^T' 'CTRL_T\n'
+bindkey -s '^[c' 'ALT_C\n'
